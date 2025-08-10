@@ -23,19 +23,24 @@ const state = reactive({
   loading: false,
   error: "",
 });
-
+interface User {
+  id: string;
+  name: string;
+  username: string;
+  role: string;
+}
 async function submitLogin() {
   const auth = useAuthStore();
   try {
     const config = useRuntimeConfig();
-    const res = await $fetch(`${config.public.apiUrl}/auth/login`, {
+    const res = await $fetch<User>(`${config.public.apiUrl}/auth/login`, {
       method: "POST",
       body: { username: state.username, password: state.password },
       credentials: "include",
     });
     if (res) {
       state.loading = true;
-      auth.isLoggedin = true;
+      auth.login(res);
       await navigateTo("/");
     }
   } catch (err) {
