@@ -45,6 +45,7 @@ async function submitLogin() {
     }
   } catch (err) {
     console.log(err);
+    auth.isLoggedin = false;
     state.error = "Login gagal";
     state.loading = false;
   }
