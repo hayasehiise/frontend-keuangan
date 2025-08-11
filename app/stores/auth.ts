@@ -8,17 +8,20 @@ interface User {
 }
 export const useAuthStore = defineStore("auth", {
   state: () => ({
-    user: null as User | null,
+    data: null as User | null,
     isLoggedin: false,
   }),
   actions: {
     login(user: User | null) {
-      this.user = user;
+      this.data = user;
       this.isLoggedin = !!user;
     },
     logout() {
-      this.user = null;
+      this.data = null;
       this.isLoggedin = false;
     },
   },
+  // persist: {
+  //   storage: piniaPluginPersistedstate.sessionStorage(),
+  // },
 });

@@ -10,7 +10,7 @@ export default defineNuxtPlugin(async (_nuxtApp) => {
   const config = useRuntimeConfig();
   const headers = useRequestHeaders();
 
-  if (authStore.user) return;
+  if (authStore.data) return;
 
   try {
     const { data: user } = await useFetch<User>(
