@@ -3,14 +3,7 @@
     <div
       class="flex flex-row max-w-5xl p-5 bg-white shadow-lg inset-shadow-sm rounded-lg"
     >
-      <div class="flex w-md max-h-3xl">
-        <img
-          src="/bussiness-card-image.webp"
-          class="h-[600px] object-cover object-center"
-          alt="Login Image Card"
-        />
-      </div>
-      <div class="flex w-2xs items-center justify-center">
+      <div class="flex w-xs items-center justify-center">
         <UForm
           :schema="schema"
           :state="state"
@@ -61,7 +54,7 @@ definePageMeta({
 
 const schema = z.object({
   username: z.string().min(1, "Username tidak boleh kosong"),
-  password: z.string().min(8, "Masukan Password Minimal 8 Karakter"),
+  password: z.string().min(6, "Masukan Password Minimal 6 Karakter"),
 });
 type Schema = z.output<typeof schema>;
 
@@ -73,14 +66,12 @@ const state = reactive({
 
 const toast = useToast();
 const auth = useAuthStore();
-async function onSubmit(event: FormSubmitEvent<Schema>) {
-  const config = useRuntimeConfig();
+async function onSubmit(_event: FormSubmitEvent<Schema>) {
   try {
     state.loading = true;
-    const res = await $fetch<Auth>(`${config.public.apiUrl}/auth/login`, {
+    const res = await useApiFetchInput<Auth>("/auth/login", {
       method: "POST",
       body: { username: state.username, password: state.password },
-      credentials: "include",
     });
     auth.login(res.user);
     toast.add({ title: `${res.message} ${res.user.name}`, color: "success" });
