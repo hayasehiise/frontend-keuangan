@@ -9,7 +9,10 @@ export function useApiFetchInput<T>(
 
   return $fetch<T>(`${config.public.apiUrl}${url}`, {
     credentials: "include",
-    headers,
+    headers: {
+      ...headers,
+      "Content-Type": "application/json",
+    },
     ...options,
   });
 }
