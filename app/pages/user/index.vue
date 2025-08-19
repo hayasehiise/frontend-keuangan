@@ -2,6 +2,16 @@
 import type { TableColumn, FormSubmitEvent } from "@nuxt/ui";
 import { z } from "zod";
 import { h, resolveComponent } from "vue";
+
+useHead({
+  title: "User Management",
+  meta: [
+    {
+      name: "description",
+      content: "Halaman untuk mengelola daftar user yang tersedia.",
+    },
+  ],
+});
 definePageMeta({
   middleware: ["auth"],
 });
@@ -169,8 +179,17 @@ const createDynamicSchema = (role: string) => {
     });
   }
 };
-const schema = computed(() => createDynamicSchema(formState.role));
-type Schema = z.output<typeof createDynamicSchema>;
+
+// Define explicit type untuk form state
+type Schema = {
+  name: string;
+  username: string;
+  password: string;
+  role: "ADMIN" | "OWNER" | "KASIR";
+  tokoId?: string;
+};
+
+const schema = computed(() => createDynamicSchema(formState.role || "ADMIN"));
 
 // schema untuk update user
 const createUpdateDynamicSchema = (role: string) => {
@@ -192,17 +211,25 @@ const createUpdateDynamicSchema = (role: string) => {
     });
   }
 };
+// Define explicit type untuk update form state
+type UpdateSchema = {
+  name: string;
+  username: string;
+  password?: string;
+  role: "ADMIN" | "OWNER" | "KASIR";
+  tokoId?: string;
+};
+
 const updateSchema = computed(() =>
-  createUpdateDynamicSchema(updateFormState.role)
+  createUpdateDynamicSchema(updateFormState.role || "ADMIN")
 );
-type UpdateSchema = z.output<typeof createUpdateDynamicSchema>;
 
 // Reactive state untuk form
 const formState = reactive<Schema>({
   name: "",
   username: "",
   password: "",
-  role: "",
+  role: "ADMIN",
   tokoId: "",
 });
 
@@ -211,7 +238,7 @@ const updateFormState = reactive<UpdateSchema>({
   name: "",
   username: "",
   password: "",
-  role: "",
+  role: "ADMIN",
   tokoId: "",
 });
 
@@ -276,7 +303,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       name: "",
       username: "",
       password: "",
-      role: "",
+      role: "ADMIN",
       tokoId: "",
     });
 
@@ -333,7 +360,7 @@ async function onUpdateSubmit(event: FormSubmitEvent<UpdateSchema>) {
       name: "",
       username: "",
       password: "",
-      role: "",
+      role: "ADMIN",
       tokoId: "",
     });
 
@@ -428,7 +455,7 @@ function closeAddUserModal() {
     name: "",
     username: "",
     password: "",
-    role: "",
+    role: "ADMIN",
     tokoId: "",
   });
 }
@@ -441,7 +468,7 @@ function closeUpdateUserModal() {
     name: "",
     username: "",
     password: "",
-    role: "",
+    role: "ADMIN",
     tokoId: "",
   });
 }
