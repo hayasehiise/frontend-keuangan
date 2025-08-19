@@ -2,7 +2,6 @@
 import type { TableColumn, FormSubmitEvent } from "@nuxt/ui";
 import { z } from "zod";
 import { h, resolveComponent } from "vue";
-import { form } from "#build/ui";
 definePageMeta({
   middleware: ["auth"],
 });
@@ -171,13 +170,6 @@ const createDynamicSchema = (role: string) => {
   }
 };
 const schema = computed(() => createDynamicSchema(formState.role));
-// const schema = z.object({
-//   name: z.string().min(1, "Nama tidak boleh kosong"),
-//   username: z.string().min(1, "Username tidak boleh kosong"),
-//   password: z.string().min(6, "Password minimal 6 karakter"),
-//   role: z.enum(["ADMIN", "OWNER", "KASIR"], "Pilih role yang valid"),
-//   tokoId: z.string().min(1, "Toko tidak boleh kosong"),
-// });
 type Schema = z.output<typeof createDynamicSchema>;
 
 // schema untuk update user
@@ -203,13 +195,6 @@ const createUpdateDynamicSchema = (role: string) => {
 const updateSchema = computed(() =>
   createUpdateDynamicSchema(updateFormState.role)
 );
-// const updateSchema = z.object({
-//   name: z.string().min(1, "Nama tidak boleh kosong"),
-//   username: z.string().min(1, "Username tidak boleh kosong"),
-//   password: z.string().optional(),
-//   role: z.enum(["ADMIN", "OWNER", "KASIR"], "Pilih role yang valid"),
-//   tokoId: z.string().min(1, "Toko tidak boleh kosong"),
-// });
 type UpdateSchema = z.output<typeof createUpdateDynamicSchema>;
 
 // Reactive state untuk form
