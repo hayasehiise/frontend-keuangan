@@ -3,7 +3,8 @@ import type { TableColumn, FormSubmitEvent } from "@nuxt/ui";
 import { z } from "zod";
 import { h, resolveComponent } from "vue";
 
-useHead({
+definePageMeta({
+  middleware: ["auth"],
   title: "User Management",
   meta: [
     {
@@ -11,9 +12,6 @@ useHead({
       content: "Halaman untuk mengelola daftar user yang tersedia.",
     },
   ],
-});
-definePageMeta({
-  middleware: ["auth"],
 });
 
 // type for User data

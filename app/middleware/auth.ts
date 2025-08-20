@@ -2,8 +2,8 @@ import { useAuthStore } from "~/stores/auth";
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const auth = useAuthStore();
-  const protectedPage = ["/", "/produk"];
-  const adminPage = ["/user"];
+  const protectedPage = ["/", "/produk", "/penjualan"];
+  const adminPage = ["/user", "/jenis-pengeluaran"];
 
   // jika blum login dan mengakses page terprotek
   if (

@@ -3,7 +3,8 @@ import type { TableColumn, FormSubmitEvent } from "@nuxt/ui";
 import { z } from "zod";
 import { h, resolveComponent } from "vue";
 
-useHead({
+definePageMeta({
+  middleware: ["auth"],
   title: "Penjualan Management",
   meta: [
     {
@@ -11,10 +12,6 @@ useHead({
       content: "Halaman untuk mengelola daftar penjualan yang tersedia.",
     },
   ],
-});
-
-definePageMeta({
-  middleware: ["auth"],
 });
 
 // Auth store untuk mengecek role user
