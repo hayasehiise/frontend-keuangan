@@ -9,6 +9,7 @@
         placeholder="Cari Jenis Pengeluaran"
         class="w-full max-w-xs"
         icon="i-lucide-search"
+        @input="_refreshJenisPengeluaran"
       />
     </div>
     <!-- Jenis Pengeluaran Table -->

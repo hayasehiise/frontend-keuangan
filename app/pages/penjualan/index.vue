@@ -110,7 +110,6 @@ const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat("id-ID", {
     dateStyle: "medium",
-    timeStyle: "short",
   }).format(date);
 };
 
@@ -211,7 +210,7 @@ type Schema = z.output<typeof schema>;
 // Reactive state untuk form
 const formState = reactive<Schema>({
   produkId: "",
-  date: new Date().toISOString().slice(0, 16), // Format untuk datetime-local input
+  date: new Date().toISOString(),
   quantity: 1,
   diskon: 0,
 });
@@ -341,7 +340,7 @@ function closeAddPenjualanModal() {
   addPenjualanModal.value = false;
   Object.assign(formState, {
     produkId: "",
-    date: new Date().toISOString().slice(0, 16), // Format untuk datetime-local input
+    date: new Date().toISOString(), // ISO-8601 dengan jam 00:00:00
     quantity: 1,
     diskon: 0,
   });
@@ -404,6 +403,7 @@ function cancelDelete() {
         placeholder="Cari penjualan..."
         class="w-64"
         icon="i-lucide-search"
+        @input="_penjualanRefresh"
       />
       <UButton
         v-if="canAddPenjualan"
@@ -434,6 +434,7 @@ function cancelDelete() {
         v-model:page="params.page"
         :total="total"
         :items-per-page="params.limit"
+        :sibling-count="1"
         show-edges
       />
     </div>
@@ -466,7 +467,7 @@ function cancelDelete() {
           <UFormField label="Tanggal Penjualan" name="date" required>
             <UInput
               v-model="formState.date"
-              type="datetime-local"
+              type="date"
               class="w-full"
               :disabled="isSubmitting"
             />

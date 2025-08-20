@@ -81,7 +81,6 @@ const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat("id-ID", {
     dateStyle: "medium",
-    timeStyle: "short",
   }).format(date);
 };
 
@@ -512,6 +511,7 @@ function closeDeleteProductModal() {
         placeholder="Cari produk..."
         class="w-64"
         icon="i-lucide-search"
+        @input="_productRefresh"
       />
       <UButton
         v-if="canAddProduct"
@@ -762,6 +762,7 @@ function closeDeleteProductModal() {
         v-model:page="params.page"
         :total="total"
         :items-per-page="params.limit"
+        :sibling-count="1"
         show-edges
       />
     </div>

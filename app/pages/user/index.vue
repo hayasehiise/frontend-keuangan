@@ -481,8 +481,14 @@ function closeDeleteUserModal() {
 <template>
   <UContainer>
     <h1 class="text-2xl font-bold mb-4">User List</h1>
+    <!-- Bagian Search Input dan Button Modal Create User -->
     <div class="flex flex-row gap-4">
-      <UInput v-model="params.search" placeholder="Cari user" class="w-64" />
+      <UInput
+        v-model="params.search"
+        placeholder="Cari user"
+        class="w-64"
+        @input="userRefresh"
+      />
       <UButton
         icon="i-lucide-circle-plus"
         label="Tambah User"
