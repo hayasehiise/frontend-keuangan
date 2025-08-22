@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { TableColumn, FormSubmitEvent } from "@nuxt/ui";
 import { z } from "zod";
-import { h, resolveComponent } from "vue";
+// import { h, resolveComponent } from "vue";
 
 definePageMeta({
   middleware: ["auth"],

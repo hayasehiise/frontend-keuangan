@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { TableColumn, FormSubmitEvent } from "@nuxt/ui";
 import { z } from "zod";
-import { h, resolveComponent } from "vue";
+// import { h, resolveComponent } from "vue";
 
 definePageMeta({
   middleware: ["auth"],
@@ -172,7 +172,7 @@ const columns: TableColumn<Product>[] = [
   },
 ];
 
-// Modal State dan Form State
+// Modal State
 const addProductModal = ref(false);
 const updateProductModal = ref(false);
 const addStockModal = ref(false);
@@ -576,6 +576,7 @@ function closeDeleteProductModal() {
           <UButton
             label="Submit"
             color="primary"
+            icon="i-lucide-save"
             :loading="isSubmitting"
             :disabled="isSubmitting"
             @click="submitForm"
@@ -638,6 +639,7 @@ function closeDeleteProductModal() {
           <UButton
             label="Update"
             color="primary"
+            icon="i-lucide-save"
             :loading="isUpdating"
             :disabled="isUpdating"
             @click="submitUpdateForm"
@@ -699,6 +701,7 @@ function closeDeleteProductModal() {
           <UButton
             label="Tambah Stok"
             color="primary"
+            icon="i-lucide-save"
             :loading="isAddingStock"
             :disabled="isAddingStock"
             @click="submitAddStockForm"
@@ -734,6 +737,7 @@ function closeDeleteProductModal() {
           <UButton
             label="Hapus"
             color="error"
+            icon="i-lucide-trash"
             :loading="isDeleting"
             :disabled="isDeleting"
             @click="onDeleteProduct"
