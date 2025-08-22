@@ -12,6 +12,15 @@ definePageMeta({
   ],
 });
 
+// pakai toast
+const toast = useToast();
+
+//type definitions untuk Jenis Pengeluaran
+type JenisPengeluaran = {
+  id: string;
+  name: string;
+};
+
 // type definitions for Pengeluaran
 type Pengeluaran = {
   id: string;
@@ -60,9 +69,24 @@ const {
   method: "GET",
 });
 
+// fetch data Jenis Pengeluaran untuk select
+const { data: JenisPengeluaranResponse } = useApiFetch<{
+  data: JenisPengeluaran[];
+}>("/jenis-pengeluaran/list", {
+  method: "GET",
+});
+
 // Computed data untuk Pengeluaran
 const pengeluaran = computed<Pengeluaran[]>(() => response.value?.data || []);
 const total = computed(() => response.value?.total || 0);
+
+// Computed data untuk Jenis Pengeluaran
+const jenisPengeluaranList = computed(
+  () => JenisPengeluaranResponse.value?.data || []
+);
+
+// State selected Jenis Pengeluaran
+const selectedJenisPengeluaran = ref<JenisPengeluaran | null>(null);
 
 // Function untuk format currency
 const formatCurrency = (value: number) => {
