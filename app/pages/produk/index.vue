@@ -546,20 +546,23 @@ function closeDeleteProductModal() {
               />
             </UFormField>
             <UFormField label="Harga" name="harga" required>
-              <UInput
-                v-model.number="formState.harga"
-                placeholder="Masukan harga produk"
-                class="w-full"
-                type="number"
+              <UInputNumber
+                v-model="formState.harga"
+                :min="0"
+                :format-options="{
+                  minimumFractionDigits: 0,
+                  style: 'currency',
+                  currency: 'IDR',
+                  currencyDisplay: 'narrowSymbol',
+                  currencySign: 'standard',
+                }"
                 :disabled="isSubmitting"
               />
             </UFormField>
             <UFormField label="Stok" name="stock" required>
-              <UInput
+              <UInputNumber
                 v-model.number="formState.stock"
-                placeholder="Masukan jumlah stok"
-                class="w-full"
-                type="number"
+                :min="0"
                 :disabled="isSubmitting"
               />
             </UFormField>
@@ -609,21 +612,24 @@ function closeDeleteProductModal() {
               />
             </UFormField>
             <UFormField label="Harga" name="harga" required>
-              <UInput
-                v-model.number="updateFormState.harga"
-                placeholder="Masukan harga produk"
-                class="w-full"
-                type="number"
-                :disabled="isUpdating"
+              <UInputNumber
+                v-model="updateFormState.harga"
+                :min="0"
+                :format-options="{
+                  minimumFractionDigits: 0,
+                  style: 'currency',
+                  currency: 'IDR',
+                  currencyDisplay: 'narrowSymbol',
+                  currencySign: 'standard',
+                }"
+                :disabled="isSubmitting"
               />
             </UFormField>
             <UFormField label="Stok" name="stock" required>
-              <UInput
-                v-model.number="updateFormState.stock"
-                placeholder="Masukan jumlah stok"
-                class="w-full"
-                type="number"
-                :disabled="isUpdating"
+              <UInputNumber
+                v-model="updateFormState.stock"
+                :min="0"
+                :disabled="isSubmitting"
               />
             </UFormField>
           </UForm>
@@ -680,12 +686,10 @@ function closeDeleteProductModal() {
               name="additionalStock"
               required
             >
-              <UInput
+              <UInputNumber
                 v-model.number="addStockFormState.additionalStock"
-                placeholder="Masukan jumlah stok yang ingin ditambah"
-                class="w-full"
-                type="number"
-                :disabled="isAddingStock"
+                :min="0"
+                :disabled="isSubmitting"
               />
             </UFormField>
           </UForm>

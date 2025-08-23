@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import type { TableColumn } from "@nuxt/ui";
+import type { TableColumn, FormSubmitEvent } from "@nuxt/ui";
+import { z } from "zod";
 
 definePageMeta({
   middleware: ["auth"],
@@ -11,6 +12,9 @@ definePageMeta({
     },
   ],
 });
+
+// Auth store untuk mengecek role user
+const authStore = useAuthStore();
 
 // pakai toast
 const toast = useToast();
@@ -87,6 +91,123 @@ const jenisPengeluaranList = computed(
 
 // State selected Jenis Pengeluaran
 const selectedJenisPengeluaran = ref<JenisPengeluaran | null>(null);
+
+// Schema untuk validasi untuk form pengeluaran
+const addSchema = z.object({
+  jenisPengeluaranId: z.string().min(1, "Jenis Pengeluaran Harus Dipilih"),
+  date: z.string().min(1, "Masukan Tanggal Pengeluaran"),
+  nominal: z.number().min(1, "Isi Nominal"),
+  detailPencatatan: z.string().optional().or(z.literal("")),
+});
+type AddSchema = z.output<typeof addSchema>;
+
+// Form State dan Ref
+const formAddState = reactive<AddSchema>({
+  jenisPengeluaranId: "",
+  date: new Date().toISOString(),
+  nominal: 0,
+  detailPencatatan: "",
+});
+const formAddRef = ref();
+
+// computed untuk Jenis Pengeluaran Select
+const jenisPengeluaranOption = computed(() => {
+  if (
+    !jenisPengeluaranList.value ||
+    !Array.isArray(jenisPengeluaranList.value)
+  ) {
+    return [];
+  }
+  return jenisPengeluaranList.value.map((item) => ({
+    label: item.name,
+    value: item.id,
+  }));
+});
+
+// Computed untuk mengecek apakah user bisa menambah pengeluaran (hanya OWNER dan KASIR)
+const canAddPengeluaran = computed(() => {
+  const userRole = authStore.data?.role;
+  return userRole === "OWNER" || userRole === "KASIR";
+});
+
+// Watcher untuk update selected Jenis Pengeluaran
+watch(
+  () => formAddState.jenisPengeluaranId,
+  (newJenisId) => {
+    if (newJenisId && jenisPengeluaranList.value) {
+      const jenisData = jenisPengeluaranList.value.find(
+        (item) => item.id === newJenisId
+      );
+      selectedJenisPengeluaran.value = jenisData || null;
+    } else {
+      selectedJenisPengeluaran.value = null;
+    }
+  }
+);
+
+// Modal State
+const addModal = ref(false);
+const addLoading = ref(false);
+
+// function reset form
+const resetForm = () => {
+  Object.assign(formAddState, {
+    jenisPengeluaranId: "",
+    date: new Date().toISOString(),
+    nominal: 0,
+    detailPencatatan: "",
+  });
+};
+
+//function onAdd handler form Add Pengeluaran
+const onAdd = async (event: FormSubmitEvent<AddSchema>) => {
+  event.preventDefault();
+  addLoading.value = true;
+  try {
+    await addSchema.parseAsync(formAddState);
+    // Konversi tanggal untuk disubmit
+    const dataToSubmit = {
+      ...formAddState,
+      date: new Date(formAddState.date).toISOString(),
+    };
+    // Submit ke API
+    await useApiFetchInput("/pengeluaran", {
+      method: "POST",
+      body: dataToSubmit,
+    });
+    toast.add({
+      title: "Sukses",
+      description: "Data berhasil ditambahkan",
+      color: "success",
+    });
+    addModal.value = false;
+    resetForm();
+    selectedJenisPengeluaran.value = null;
+    await _refreshPengeluaran();
+  } catch {
+    toast.add({
+      title: "Gagal",
+      description: "Data gagal ditambahkan",
+      color: "error",
+    });
+  } finally {
+    addLoading.value = false;
+  }
+};
+
+// function submit form add
+const submitAddForm = async () => {
+  if (formAddRef.value) {
+    await formAddRef.value.submit();
+  }
+};
+
+// watch ketika modal add ditutup
+watch(addModal, (isOpen) => {
+  if (!isOpen) {
+    resetForm();
+  }
+});
 
 // Function untuk format currency
 const formatCurrency = (value: number) => {
@@ -177,14 +298,98 @@ const columns: TableColumn<Pengeluaran>[] = [
 <template>
   <UContainer>
     <h1 class="text-2xl font-bold mb-4">Daftar Pengeluaran</h1>
-    <div class="flex flex-row mb-4">
+    <div class="flex flex-row gap-4 mb-6">
       <UInput
         v-model="params.search"
         placeholder="Cari Pengeluaran..."
-        class="mb-4"
         icon="i-lucide-search"
         @input="_refreshPengeluaran"
       />
+      <UModal
+        v-model:open="addModal"
+        title="Tambah Pengeluaran"
+        description="Form untuk menambahkan data pengeluaran"
+        :ui="{ footer: 'justify-end' }"
+      >
+        <!-- Tombol untuk show modal add -->
+        <UButton
+          v-if="canAddPengeluaran"
+          label="Tambah Data"
+          icon="i-lucide-circle-plus"
+        />
+        <!-- isi Modal -->
+        <template #body>
+          <UForm
+            ref="formAddRef"
+            :state="formAddState"
+            :schema="addSchema"
+            @submit="onAdd"
+          >
+            <UFormField
+              name="jenisPengeluaranId"
+              label="Jenis Pengeluaran"
+              required
+            >
+              <USelect
+                v-model="formAddState.jenisPengeluaranId"
+                :items="jenisPengeluaranOption"
+                placeholder="Pilih Jenis Pengeluaran"
+                class="w-auto"
+                :disabled="addLoading"
+              />
+            </UFormField>
+            <UFormField name="date" label="Tanggal Pengeluaran" required>
+              <UInput
+                v-model="formAddState.date"
+                type="date"
+                class="w-auto"
+                :disabled="addLoading"
+              />
+            </UFormField>
+            <UFormField name="nominal" label="Total Pengeluaran">
+              <UInputNumber
+                v-model="formAddState.nominal"
+                :min="0"
+                :format-options="{
+                  minimumFractionDigits: 0,
+                  style: 'currency',
+                  currency: 'IDR',
+                  currencyDisplay: 'narrowSymbol',
+                  currencySign: 'standard',
+                }"
+                :disabled="addLoading"
+              />
+            </UFormField>
+            <UFormField name="detailPencatatan" label="Deskripsi">
+              <UTextarea
+                v-model="formAddState.detailPencatatan"
+                placeholder="Masukan Catatan (Optional)"
+                autoresize
+                class="w-full"
+                :disabled="addLoading"
+              />
+            </UFormField>
+          </UForm>
+        </template>
+        <template #footer="{ close }">
+          <UButton
+            label="Batal"
+            variant="outline"
+            color="neutral"
+            icon="i-lucide-save-off"
+            @click="close"
+          />
+          <UButton
+            label="Simpan"
+            variant="solid"
+            color="primary"
+            icon="i-lucide-save"
+            :loading="addLoading"
+            :disabled="addLoading"
+            @click="submitAddForm"
+          />
+        </template>
+      </UModal>
     </div>
 
     <!-- Table Pengeluaran -->

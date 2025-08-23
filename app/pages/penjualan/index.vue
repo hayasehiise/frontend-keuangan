@@ -473,24 +473,18 @@ function cancelDelete() {
             />
           </UFormField>
           <UFormField label="Jumlah" name="quantity" required>
-            <UInput
+            <UInputNumber
               v-model.number="formState.quantity"
-              type="number"
-              placeholder="Masukan jumlah"
-              class="w-full"
+              :min="0"
               :disabled="isSubmitting"
-              min="1"
             />
           </UFormField>
           <UFormField label="Diskon (%)" name="diskon" required>
-            <UInput
+            <UInputNumber
               v-model.number="formState.diskon"
-              type="number"
-              placeholder="Masukan diskon (0-100)"
-              class="w-full"
+              :min="0"
+              :max="100"
               :disabled="isSubmitting"
-              min="0"
-              max="100"
             />
           </UFormField>
           <div class="grid grid-cols-2 gap-4">
